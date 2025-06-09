@@ -47,7 +47,7 @@ export const VehicleList: React.FC<VehicleListProps> = ({
         },
         {
             header: 'Actions',
-            accessor: 'immatriculation' as const,
+            accessor: 'id' as const,
             render: (_: any, item: VehiculeWithId): ReactNode => (
                 <div className="flex space-x-2">
                     <Button

@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 interface Column<T> {
   header: string;
   accessor: keyof T;
-  render?: (value: T[keyof T], item: T) => React.ReactNode;
   sortable?: boolean;
+  render?: (value: any, item: T) => React.ReactNode;
 }
 
 interface TableProps<T> {
@@ -139,7 +139,7 @@ function Table<T extends { id: string | number }>({
         </tbody>
       </table>
 
-      {totalPages > 1 && (
+      {data.length > itemsPerPage && (
         <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
           <div className="flex justify-between flex-1 sm:hidden">
             <button

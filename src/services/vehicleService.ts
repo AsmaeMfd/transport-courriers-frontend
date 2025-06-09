@@ -2,6 +2,7 @@ import axiosInstance from '../config/axiosConfig';
 import { API_CONFIG } from '../config/apiConfig';
 import { Vehicule, CreateVehiculeRequest, VehiculeResponse, VehiculeListResponse } from '../types/admin';
 import { handleApiError } from '../config/axiosConfig';
+import { getToken } from '../utils/auth';
 
 class VehicleService {
     /**
@@ -10,9 +11,15 @@ class VehicleService {
      */
     async getAllVehicles(): Promise<Vehicule[]> {
         try {
+            console.log('Fetching all vehicles...');
+            const token = getToken();
+            console.log('Current auth token:', token ? 'Present' : 'Absent');
+            
             const response = await axiosInstance.get<VehiculeListResponse>(API_CONFIG.VEHICULE.getAllVehicules);
+            console.log('API Response:', response.data);
             return response.data.data;
         } catch (error) {
+            console.error('Error in getAllVehicles:', error);
             throw handleApiError(error);
         }
     }
@@ -24,6 +31,7 @@ class VehicleService {
      */
     async getVehicleByImmatriculation(immatriculation: string): Promise<Vehicule> {
         try {
+            console.log('Fetching vehicle with immatriculation:', immatriculation);
             const response = await axiosInstance.get<VehiculeResponse>(
                 API_CONFIG.VEHICULE.getVehiculeByImmatriculation(immatriculation)
             );
@@ -32,6 +40,7 @@ class VehicleService {
             }
             return response.data.data;
         } catch (error) {
+            console.error('Error in getVehicleByImmatriculation:', error);
             throw handleApiError(error);
         }
     }
@@ -74,15 +83,28 @@ class VehicleService {
      */
     async createVehicle(vehicleData: CreateVehiculeRequest): Promise<Vehicule> {
         try {
+            console.log('Creating new vehicle with data:', vehicleData);
+            const token = getToken();
+            console.log('Current auth token:', token ? 'Present' : 'Absent');
+            
             const response = await axiosInstance.post<VehiculeResponse>(
                 API_CONFIG.VEHICULE.addVehicule,
                 vehicleData
             );
+            console.log('API Response:', response.data);
+            
             if (!response.data.data) {
                 throw new Error('Erreur lors de la création du véhicule');
             }
             return response.data.data;
-        } catch (error) {
+        } catch (error: any) {
+            console.error('Error in createVehicle:', error);
+            console.error('Error details:', {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+                headers: error.response?.headers
+            });
             throw handleApiError(error);
         }
     }
@@ -95,15 +117,25 @@ class VehicleService {
      */
     async updateVehicle(immatriculation: string, vehicleData: CreateVehiculeRequest): Promise<Vehicule> {
         try {
+            console.log('=== Début de la mise à jour du véhicule ===');
+            console.log('Immatriculation:', immatriculation);
+            console.log('Données de mise à jour:', vehicleData);
+            
+            const token = getToken();
+            console.log('Current auth token:', token ? 'Present' : 'Absent');
+            
             const response = await axiosInstance.put<VehiculeResponse>(
                 API_CONFIG.VEHICULE.updateVehicule(immatriculation),
                 vehicleData
             );
+            console.log('API Response:', response.data);
+            
             if (!response.data.data) {
                 throw new Error('Erreur lors de la mise à jour du véhicule');
             }
             return response.data.data;
         } catch (error) {
+            console.error('Error in updateVehicle:', error);
             throw handleApiError(error);
         }
     }
@@ -115,8 +147,14 @@ class VehicleService {
      */
     async deleteVehicle(immatriculation: string): Promise<void> {
         try {
+            console.log('Deleting vehicle with immatriculation:', immatriculation);
+            const token = getToken();
+            console.log('Current auth token:', token ? 'Present' : 'Absent');
+            
             await axiosInstance.delete(API_CONFIG.VEHICULE.deleteVehicule(immatriculation));
+            console.log('Vehicle deleted successfully');
         } catch (error) {
+            console.error('Error in deleteVehicle:', error);
             throw handleApiError(error);
         }
     }
@@ -128,9 +166,13 @@ class VehicleService {
      */
     async isVehicleAvailable(immatriculation: string): Promise<boolean> {
         try {
+            console.log('Checking availability for vehicle:', immatriculation);
             const vehicle = await this.getVehicleByImmatriculation(immatriculation);
-            return !vehicle.transporteurVehicule;
+            const isAvailable = !vehicle.transporteurVehicule;
+            console.log('Vehicle availability:', isAvailable);
+            return isAvailable;
         } catch (error) {
+            console.error('Error in isVehicleAvailable:', error);
             throw handleApiError(error);
         }
     }

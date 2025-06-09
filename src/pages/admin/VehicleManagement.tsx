@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { VehicleForm } from '../../components/admin/VehicleForm';
 import { VehicleList } from '../../components/admin/VehicleList';
-import { Vehicule, VehiculeListResponse, AgenceListResponse } from '../../types/admin';
+import { Vehicule, VehiculeListResponse, AgenceListResponse, CreateVehiculeRequest } from '../../types/admin';
 import { Agence } from '../../types/admin';
 import vehicleService from '../../services/vehicleService';
 import agencyService from '../../services/agencyService';
@@ -13,6 +13,8 @@ import Card from '../../components/ui/Card';
 import SearchBar from '../../components/ui/SearchBar';
 
 const VehicleManagement: React.FC = () => {
+    console.log('VehicleManagement component rendering');
+    
     const [vehicules, setVehicules] = useState<Vehicule[]>([]);
     const [agences, setAgences] = useState<Agence[]>([]);
     const [selectedVehicule, setSelectedVehicule] = useState<Vehicule | null>(null);
@@ -22,55 +24,70 @@ const VehicleManagement: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
+        console.log('VehicleManagement useEffect running');
         loadVehicles();
         loadAgencies();
     }, []);
 
     const loadVehicles = async () => {
+        console.log('Loading vehicles...');
         try {
             setIsLoading(true);
             const response = await vehicleService.getAllVehicles();
-            setVehicules(response);
+            console.log('Vehicles loaded:', response);
+            setVehicules(response || []);
         } catch (error) {
+            console.error('Error loading vehicles:', error);
             toast.error('Erreur lors du chargement des véhicules');
+            setVehicules([]);
         } finally {
             setIsLoading(false);
         }
     };
 
     const loadAgencies = async () => {
+        console.log('Loading agencies...');
         try {
             const response = await agencyService.getAllAgencies();
-            setAgences(response);
+            console.log('Agencies loaded:', response);
+            setAgences(response || []);
         } catch (error) {
+            console.error('Error loading agencies:', error);
             toast.error('Erreur lors du chargement des agences');
+            setAgences([]);
         }
     };
 
-    const handleCreate = async (vehicleData: any) => {
+    const handleCreate = async (vehicleData: CreateVehiculeRequest) => {
+        console.log('Creating vehicle with data:', vehicleData);
         try {
             setIsFormLoading(true);
             const response = await vehicleService.createVehicle(vehicleData);
-            setVehicules([...vehicules, response]);
+            console.log('Vehicle created:', response);
+            setVehicules(prev => [...prev, response]);
             setIsModalOpen(false);
             toast.success('Véhicule créé avec succès');
         } catch (error) {
+            console.error('Error creating vehicle:', error);
             toast.error('Erreur lors de la création du véhicule');
         } finally {
             setIsFormLoading(false);
         }
     };
 
-    const handleUpdate = async (vehicleData: any) => {
+    const handleUpdate = async (vehicleData: CreateVehiculeRequest) => {
         if (!selectedVehicule) return;
+        console.log('Updating vehicle:', selectedVehicule.immatriculation, 'with data:', vehicleData);
         try {
             setIsFormLoading(true);
             const response = await vehicleService.updateVehicle(selectedVehicule.immatriculation, vehicleData);
-            setVehicules(vehicules.map(v => v.immatriculation === response.immatriculation ? response : v));
+            console.log('Vehicle updated:', response);
+            setVehicules(prev => prev.map(v => v.immatriculation === response.immatriculation ? response : v));
             setSelectedVehicule(null);
             setIsModalOpen(false);
             toast.success('Véhicule mis à jour avec succès');
         } catch (error) {
+            console.error('Error updating vehicle:', error);
             toast.error('Erreur lors de la mise à jour du véhicule');
         } finally {
             setIsFormLoading(false);
@@ -79,6 +96,7 @@ const VehicleManagement: React.FC = () => {
 
     const handleDelete = async (immatriculation: string) => {
         if (window.confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) {
+            console.log('Deleting vehicle:', immatriculation);
             try {
                 setIsLoading(true);
                 const isAvailable = await vehicleService.isVehicleAvailable(immatriculation);
@@ -87,9 +105,10 @@ const VehicleManagement: React.FC = () => {
                     return;
                 }
                 await vehicleService.deleteVehicle(immatriculation);
-                setVehicules(vehicules.filter(v => v.immatriculation !== immatriculation));
+                setVehicules(prev => prev.filter(v => v.immatriculation !== immatriculation));
                 toast.success('Véhicule supprimé avec succès');
             } catch (error) {
+                console.error('Error deleting vehicle:', error);
                 toast.error('Erreur lors de la suppression du véhicule');
             } finally {
                 setIsLoading(false);
@@ -98,24 +117,35 @@ const VehicleManagement: React.FC = () => {
     };
 
     const handleEdit = (vehicule: Vehicule) => {
+        console.log('Editing vehicle:', vehicule);
         setSelectedVehicule(vehicule);
         setIsModalOpen(true);
     };
 
     const handleOpenCreateModal = () => {
+        console.log('Opening create modal');
         setSelectedVehicule(null);
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
+        console.log('Closing modal');
         setIsModalOpen(false);
         setSelectedVehicule(null);
     };
 
-    const filteredVehicules = vehicules.filter(vehicule =>
+    const filteredVehicules = Array.isArray(vehicules) ? vehicules.filter(vehicule =>
         vehicule.immatriculation.toLowerCase().includes(searchQuery.toLowerCase()) ||
         vehicule.type.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    ) : [];
+
+    console.log('Rendering VehicleManagement with state:', {
+        vehicules: vehicules?.length || 0,
+        agences: agences?.length || 0,
+        isLoading,
+        isModalOpen,
+        searchQuery
+    });
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -164,7 +194,7 @@ const VehicleManagement: React.FC = () => {
                         immatriculation: selectedVehicule.immatriculation,
                         type: selectedVehicule.type,
                         capacite: selectedVehicule.capacite,
-                        id_agence: selectedVehicule.agence?.id_agence || ''
+                        id_agence: selectedVehicule.agence?.id_agence
                     } : undefined}
                     onSubmit={selectedVehicule ? handleUpdate : handleCreate}
                     agences={agences}

@@ -14,36 +14,30 @@ axiosInstance.interceptors.request.use(
     (config) => {
         // Récupération du token d'authentification
         const token = getToken();
-        //console ajoute
         console.log("Token utilisé pour les requêtes :", token);
-        // --- Début des logs ajoutés ---
         console.log('Axios Request Interceptor:');
         console.log('Attempting to get token...', token);
-        // --- Fin des logs ajoutés ---
 
         // Ajout du token dans les headers si disponible
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
-            // --- Début des logs ajoutés ---
             console.log('Token found, adding Authorization header:', config.headers.Authorization);
-            // --- Fin des logs ajoutés ---
         } else {
-            // --- Début des logs ajoutés ---
             console.log('No token found or headers not available, Authorization header not added.');
-            // --- Fin des logs ajoutés ---
         }
         
-        // --- Début des logs ajoutés ---
-        console.log('Request config headers:', config.headers);
+        console.log('Request config:', {
+            url: config.url,
+            method: config.method,
+            headers: config.headers,
+            data: config.data
+        });
         console.log('--- End Axios Request Interceptor ---');
-        // --- Fin des logs ajoutés ---
 
         return config;
     },
     (error) => {
-        // --- Début des logs ajoutés ---
         console.error('Axios Request Interceptor Error:', error);
-        // --- Fin des logs ajoutés ---
         return Promise.reject(error);
     }
 );
@@ -54,6 +48,19 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     (error) => {
+        console.error('Axios Response Error:', {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            headers: error.response?.headers,
+            config: {
+                url: error.config?.url,
+                method: error.config?.method,
+                headers: error.config?.headers,
+                data: error.config?.data
+            }
+        });
+
         if (error.response) {
             // Gestion des erreurs HTTP
             switch (error.response.status) {
@@ -64,7 +71,9 @@ axiosInstance.interceptors.response.use(
                     return Promise.reject(new Error(ERROR_MESSAGES.UNAUTHORIZED));
                 
                 case 403:
-                    return Promise.reject(new Error(ERROR_MESSAGES.FORBIDDEN));
+                    // Accès refusé - on renvoie l'erreur avec les détails
+                    const errorMessage = error.response.data?.message || ERROR_MESSAGES.FORBIDDEN;
+                    return Promise.reject(new Error(errorMessage));
                 
                 case 404:
                     return Promise.reject(new Error(ERROR_MESSAGES.NOT_FOUND));
@@ -113,5 +122,6 @@ export const handleApiError = (error: unknown): ApiError => {
             axiosError.response?.data
         );
     }
+    
     return new ApiError(ERROR_MESSAGES.SERVER_ERROR);
 };

@@ -2,7 +2,7 @@ import { User, RoleEntity } from './auth';
 
 // Types pour la gestion des agences
 export interface Agence {
-    id_agence: string;
+    id_agence: number;
     nomAgence: string;
     adresse_agence: string;
     employes?: Employe[];
@@ -12,7 +12,7 @@ export interface Agence {
 
 // DTOs pour les réponses du backend
 export interface AgenceDashboardDto {
-    id: string;
+    id: number;
     nom: string;
     adresse: string;
     nombreEmployes: number;
@@ -26,8 +26,8 @@ export interface EmployeAgenceDto {
     emp_phone: string;
     emp_adresse: string;
     role?: RoleEntity;
-    email?: string; // rempli si opérateur
-    mot_passe?: string; // rempli si opérateu
+    email?: string;
+    mot_passe?: string;
 }
 
 export interface VehiculeDto {
@@ -48,9 +48,9 @@ export interface Vehicule {
     immatriculation: string;
     type: string;
     capacite: number;
+    disponible?: boolean;
     agence?: Agence;
     transporteurVehicule?: Transporteur;
-    disponible: boolean;
 }
 
 export interface VehiculeDashboardDto {
@@ -98,7 +98,7 @@ export interface CreateVehiculeRequest {
     immatriculation: string;
     type: string;
     capacite: number;
-    id_agence: string;
+    id_agence?: number;
 }
 
 export interface CreateEmployeRequest {
@@ -107,7 +107,7 @@ export interface CreateEmployeRequest {
     prenom_emp: string;
     emp_phone: string;
     emp_adresse: string;
-    id_agence: string;
+    id_agence: number;
     email?: string;
     mot_passe?: string;
     id_role: number;
@@ -119,7 +119,7 @@ export interface CreateTransporteurRequest {
     prenom_trs: string;
     trs_phone: number;
     trs_adress: string;
-    id_agence: string;
+    id_agence: number;
     id_role: number;
     immatriculation?: string;
 }
@@ -145,7 +145,7 @@ export interface ListResponse<T> {
     data: T[];
 }
 
-export type AgenceListResponse = ListResponse<string>; // Liste des adresses
+export type AgenceListResponse = ListResponse<Agence>;
 export type VehiculeListResponse = ListResponse<Vehicule>;
 export type EmployeListResponse = ListResponse<Employe>;
 export type TransporteurListResponse = ListResponse<Transporteur>;
@@ -157,7 +157,13 @@ export interface SearchFilters {
     limit?: number;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
-    agenceId?: string;
+    agenceId?: number;
     roleId?: number;
     status?: string;
 } 
+
+export interface CreateUserRequest {
+    email: string;
+    mot_passe: string;
+    id_role: number;
+}

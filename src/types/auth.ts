@@ -18,6 +18,14 @@ export interface Employe {
     role?: RoleEntity;
 }
 
+// Interface pour l'utilisateur
+export interface User {
+    email: string;
+    mot_passe: string;
+    role: RoleEntity;
+    employe?: Employe;
+}
+
 // Interface pour la requête de connexion
 export interface LoginRequest {
     email: string;
@@ -27,14 +35,6 @@ export interface LoginRequest {
 // Interface pour la réponse de connexion
 export interface LoginResponse {
     token: string;
-}
-
-// Interface pour l'utilisateur
-export interface User {
-    email: string;
-    mot_passe: string;
-    role: RoleEntity;
-    employe?: Employe;
 }
 
 // Interface pour le contexte d'authentification

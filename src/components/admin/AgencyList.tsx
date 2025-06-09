@@ -7,14 +7,14 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 interface AgencyListProps {
     agences: Agence[];
     onEdit: (agence: Agence) => void;
-    onDelete: (id: string) => void;
+    onDelete: (id: number) => void;
     isLoading?: boolean;
 }
 
 // Type adapté pour les données du tableau, incluant les compteurs calculés
 type AgenceForTable = Agence & {
-    id: string; // Utiliser id_agence comme clé pour le tableau Table
-    totalEmployees: number; // Nombre total d'employés (Opérateurs + Transporteurs)
+    id: number; // Utiliser id_agence comme clé pour le tableau Table
+    totalEmployees: number; // Nombre total d'employés
     totalVehicles: number; // Nombre total de véhicules
 };
 
@@ -26,20 +26,29 @@ export const AgencyList: React.FC<AgencyListProps> = ({
 }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
+    console.log('AgencyList received agences:', agences);
+
     // Préparer les données pour la table en calculant les compteurs
-    const agenciesForTable: AgenceForTable[] = agences.map(agence => ({
-        ...agence,
-        id: agence.id_agence, // Utiliser id_agence comme clé pour le tableau Table
-        totalEmployees: (agence.employes?.length || 0) + (agence.transporteurs?.length || 0), // Total Opérateurs + Transporteurs
-        totalVehicles: agence.vehicules?.length || 0, // Compter tous les véhicules
-    }));
+    const agenciesForTable: AgenceForTable[] = agences.map(agence => {
+        console.log('Processing agence for table:', agence);
+        return {
+            ...agence,
+            id: agence.id_agence,
+            totalEmployees: agence.employes?.length || 0,
+            totalVehicles: agence.vehicules?.length || 0,
+        };
+    });
+
+    console.log('Agencies prepared for table:', agenciesForTable);
 
     // Filtrer les agences en fonction de la recherche (ID, Nom, Adresse)
     const filteredAgences = agenciesForTable.filter(agence =>
         agence.nomAgence.toLowerCase().includes(searchQuery.toLowerCase()) ||
         agence.adresse_agence.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        agence.id_agence.toLowerCase().includes(searchQuery.toLowerCase())
+        agence.id_agence.toString().includes(searchQuery)
     );
+
+    console.log('Filtered agencies:', filteredAgences);
 
     // Définition des colonnes du tableau avec le bon typage
     const columns = [

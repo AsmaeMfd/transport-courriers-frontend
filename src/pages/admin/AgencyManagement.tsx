@@ -21,9 +21,13 @@ const AgencyManagement: React.FC = () => {
     const loadAgencies = async () => {
         try {
             setIsLoading(true);
+            console.log('Loading agencies...');
             const agencesList = await agencyService.getAllAgencies();
+            console.log('Received agencies:', agencesList);
             setAgences(agencesList);
+            console.log('Agencies state updated:', agencesList);
         } catch (error) {
+            console.error('Error loading agencies:', error);
             toast.error('Erreur lors du chargement des agences');
         } finally {
             setIsLoading(false);
@@ -35,43 +39,40 @@ const AgencyManagement: React.FC = () => {
     }, []);
 
     const handleCreate = async (data: CreateAgenceRequest) => {
-        console.log('handleCreate called with data:', data);
         setIsFormLoading(true);
         try {
-            console.log('Calling agencyService.createAgency...');
-            const newAgency = await agencyService.createAgency(data);
-            console.log('agencyService.createAgency succeeded, received:', newAgency);
-            setAgences(prev => [...prev, newAgency]);
-            console.log('Agency added to state.');
+            await agencyService.createAgency(data);
+            await loadAgencies();
             setIsModalOpen(false);
-            console.log('Modal closed.');
             toast.success('Agence créée avec succès');
         } catch (error) {
-            console.error('Error in handleCreate:', error);
+            console.error('Error creating agency:', error);
             toast.error('Erreur lors de la création de l\'agence');
         } finally {
-            console.log('handleCreate finished, setting isFormLoading(false).');
             setIsFormLoading(false);
         }
     };
 
     const handleUpdate = async (data: CreateAgenceRequest) => {
         if (!selectedAgence) return;
+        console.log('Updating agency with data:', data);
+        setIsFormLoading(true);
         try {
-            setIsFormLoading(true);
             const updatedAgency = await agencyService.updateAgency(selectedAgence.id_agence, data);
-            setAgences(prev => prev.map(a => a.id_agence === updatedAgency.id_agence ? updatedAgency : a));
+            console.log('Agency updated successfully:', updatedAgency);
+            await loadAgencies();
             setIsModalOpen(false);
             setSelectedAgence(null);
             toast.success('Agence mise à jour avec succès');
         } catch (error) {
+            console.error('Error updating agency:', error);
             toast.error('Erreur lors de la mise à jour de l\'agence');
         } finally {
             setIsFormLoading(false);
         }
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (id: number) => {
         if (window.confirm('Êtes-vous sûr de vouloir supprimer cette agence ?')) {
             setIsLoading(true);
             try {
@@ -92,12 +93,8 @@ const AgencyManagement: React.FC = () => {
     };
 
     const handleEdit = (agence: Agence) => {
+        console.log('Editing agency:', agence);
         setSelectedAgence(agence);
-        setIsModalOpen(true);
-    };
-
-    const handleOpenCreateModal = () => {
-        setSelectedAgence(null);
         setIsModalOpen(true);
     };
 
@@ -106,10 +103,15 @@ const AgencyManagement: React.FC = () => {
         setSelectedAgence(null);
     };
 
+    const handleOpenCreateModal = () => {
+        setSelectedAgence(null);
+        setIsModalOpen(true);
+    };
+
     const filteredAgences = agences.filter(agence =>
         agence.nomAgence.toLowerCase().includes(searchQuery.toLowerCase()) ||
         agence.adresse_agence.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        agence.id_agence.toLowerCase().includes(searchQuery.toLowerCase())
+        agence.id_agence.toString().includes(searchQuery)
     );
 
     return (
@@ -153,7 +155,10 @@ const AgencyManagement: React.FC = () => {
                 title={selectedAgence ? 'Modifier l\'agence' : 'Nouvelle agence'}
             >
                 <AgencyForm
-                    initialData={selectedAgence ? { nomAgence: selectedAgence.nomAgence, adresse_agence: selectedAgence.adresse_agence } : undefined}
+                    initialData={selectedAgence ? {
+                        nomAgence: selectedAgence.nomAgence,
+                        adresse_agence: selectedAgence.adresse_agence
+                    } : undefined}
                     onSubmit={selectedAgence ? handleUpdate : handleCreate}
                     isLoading={isFormLoading}
                     onCancel={handleCloseModal}

@@ -13,7 +13,8 @@ interface AgencyFormProps {
 export const AgencyForm: React.FC<AgencyFormProps> = ({
     initialData,
     onSubmit,
-    isLoading = false
+    isLoading = false,
+    onCancel
 }) => {
     const [formData, setFormData] = React.useState<CreateAgenceRequest>({
         nomAgence: initialData?.nomAgence || '',
@@ -28,9 +29,18 @@ export const AgencyForm: React.FC<AgencyFormProps> = ({
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(formData);
+        try {
+            await onSubmit(formData);
+            // Réinitialiser le formulaire après soumission réussie
+            setFormData({
+                nomAgence: '',
+                adresse_agence: ''
+            });
+        } catch (error) {
+            console.error('Error submitting form:', error);
+        }
     };
 
     return (
@@ -51,13 +61,25 @@ export const AgencyForm: React.FC<AgencyFormProps> = ({
                 placeholder="Entrez l'adresse de l'agence"
                 required
             />
-            <Button
-                type="submit"
-                isLoading={isLoading}
-                fullWidth
-            >
-                {initialData ? 'Modifier' : 'Créer'} l'agence
-            </Button>
+            <div className="flex gap-4 mt-4">
+                <Button
+                    type="submit"
+                    isLoading={isLoading}
+                    fullWidth
+                >
+                    {initialData ? 'Modifier' : 'Créer'} l'agence
+                </Button>
+                {onCancel && (
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={onCancel}
+                        fullWidth
+                    >
+                        Annuler
+                    </Button>
+                )}
+            </div>
         </Form>
     );
 };   

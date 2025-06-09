@@ -30,17 +30,19 @@ export const VehicleForm: React.FC<VehicleFormProps> = ({
         immatriculation: initialData?.immatriculation || '',
         type: initialData?.type || '',
         capacite: initialData?.capacite || 0,
-        id_agence: initialData?.id_agence || ''
+        id_agence: initialData?.id_agence
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
 
-    const [selectedAgence, setSelectedAgence] = useState<string>(initialData?.id_agence || '');
+    const [selectedAgence, setSelectedAgence] = useState<string>(
+        initialData?.id_agence?.toString() || ''
+    );
 
     useEffect(() => {
         setFormData(prev => ({
             ...prev,
-            id_agence: selectedAgence
+            id_agence: selectedAgence ? Number(selectedAgence) : undefined
         }));
     }, [selectedAgence]);
 
@@ -103,7 +105,7 @@ export const VehicleForm: React.FC<VehicleFormProps> = ({
     };
 
     const agenceOptions = agences.map(agence => ({
-        value: agence.id_agence,
+        value: agence.id_agence.toString(),
         label: agence.nomAgence
     }));
 

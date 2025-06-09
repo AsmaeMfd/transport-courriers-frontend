@@ -201,7 +201,8 @@ const EmployeeManagement: React.FC = () => {
                         prenom_emp: selectedEmployee.prenom_emp,
                         emp_phone: selectedEmployee.emp_phone,
                         emp_adresse: selectedEmployee.emp_adresse,
-                        id_agence: selectedEmployee.agence?.id_agence || ''
+                        id_agence: selectedEmployee.agence?.id_agence || 0,
+                        id_role: selectedEmployee.role?.id_role || 0
                     } : undefined}
                     initialUserData={selectedEmployee?.utilisateur ? {
                         email: selectedEmployee.utilisateur.email,

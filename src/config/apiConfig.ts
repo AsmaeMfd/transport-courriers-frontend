@@ -56,18 +56,19 @@ export const API_CONFIG = {
     // Endpoints pour les courriers
     COURRIERS: {
         BASE: '/courriers',
-        GET_ALL: '/courriers/all',
-        GET_BY_ID: (id: number) => `/courriers/${id}`,
-        CREATE: '/courriers/create',
-        UPDATE: (id: number) => `/courriers/${id}`,
-        DELETE: (id: number) => `/courriers/${id}`,
-        GET_BY_STATUS: (statut: string) => `/courriers/statut/${statut}`,
-        CREATE_WITH_CLIENT: '/courriers/create-with-client',
-        UPDATE_STATUS: (id: number) => `/courriers/status/${id}`,
-        GENERATE_ETIQUETTE: (id: number) => `/courriers/${id}/etiquette`,
-        GENERATE_FACTURE: (id: number) => `/courriers/${id}/facture`,
+        getAllCourriers: '/courriers/all',//done
+        getCourrierById: (id: number) => `/courriers/${id}`,//done
+        create: '/courriers/create',//done
+        updateCourrier: (id: number) => `/courriers/${id}`,//done
+        deleteCourrier: (id: number) => `/courriers/${id}`,//done
+        getCourrierByStatut: (statut: string) => `/courriers/statut/${statut}`,//done
+        createCourrierAvecClient: '/courriers/create-with-client',//done
+        changerStatut: (id: number) => `/courriers/status/${id}`,//done
+        /* GENERATE_FACTURE: (id: number) => `/courriers/${id}/facture`, */
     },
 };
+
+
 
 // Configuration des headers par défaut
 export const DEFAULT_HEADERS: Record<string, string> = {
