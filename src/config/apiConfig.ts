@@ -13,11 +13,11 @@ export const API_CONFIG = {
     AGENCE: {
         BASE: '/agence',
         getAllAdresses: '/agence/all', 
-        getAgenceById: (id: string) => `/agence/${id}`,
+        getAgenceById: (id: number) => `/agence/${id}`,
         createAgence: '/agence/create',
-        updateAgence: (id: string) => `/agence/update/${id}`,
-        deleteAgence: (id: string) => `/agence/delete/${id}`,
-        getDetailsAgence: (nomAgence: string) => `/agence/details/${nomAgence}`,
+        updateAgence: (id: number) => `/agence/update/${id}`,
+        deleteAgence: (id: number) => `/agence/delete/${id}`,
+        getDetailsAgence: (nomAgence: String) => `/agence/details/${nomAgence}`,
     },
     
     // Endpoints pour les véhicules
@@ -74,6 +74,7 @@ export const API_CONFIG = {
 export const DEFAULT_HEADERS: Record<string, string> = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    
 };
 
 // Configuration des timeouts

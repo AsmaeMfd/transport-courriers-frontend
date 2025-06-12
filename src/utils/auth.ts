@@ -55,5 +55,3 @@ export const isOperator = (): boolean => {
     const user = getUser();
     return user?.role.nom === 'OPERATEUR';
 }; 
-
-

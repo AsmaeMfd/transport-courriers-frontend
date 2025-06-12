@@ -56,4 +56,4 @@ export interface VehicleListProps {
     onEdit: (vehicule: Vehicule) => void;
     onDelete: (id: string) => Promise<void>;
     onSearch: (query: string) => void;
-} 
+}  

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import LoginForm from '../components/LoginForm';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 // Interface pour la dernière tentative de connexion
 interface LastLoginAttempt {
@@ -186,6 +186,14 @@ const LoginPage = () => {
                             <h1 className="text-xl font-semibold text-gray-900">
                                 Système de Gestion de Transport
                             </h1>
+                        </div>
+                        <div>
+                            <Link
+                                to="/client"
+                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            >
+                                Accéder à l'interface client
+                            </Link>
                         </div>
                     </div>
                 </div>

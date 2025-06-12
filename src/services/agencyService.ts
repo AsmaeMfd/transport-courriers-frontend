@@ -197,10 +197,10 @@ class AgencyService {
             };
             
             console.log('Données envoyées au serveur:', agenceData);
-            console.log('URL de mise à jour:', API_CONFIG.AGENCE.updateAgence(id.toString()));
+            console.log('URL de mise à jour:', API_CONFIG.AGENCE.updateAgence(id));
             
             const response = await axiosInstance.put<Agence>(
-                API_CONFIG.AGENCE.updateAgence(id.toString()),
+                API_CONFIG.AGENCE.updateAgence(id),
                 agenceData
             );
             
@@ -257,7 +257,7 @@ class AgencyService {
      */
     async deleteAgency(id: number): Promise<void> {
         try {
-            await axiosInstance.delete(API_CONFIG.AGENCE.deleteAgence(id.toString()));
+            await axiosInstance.delete(API_CONFIG.AGENCE.deleteAgence(id));
         } catch (error) {
             throw handleApiError(error);
         }

@@ -1,8 +1,9 @@
 import axiosInstance from '../config/axiosConfig';
 import { API_CONFIG } from '../config/apiConfig';
-import { Vehicule, CreateVehiculeRequest, VehiculeResponse, VehiculeListResponse } from '../types/admin';
+import { Vehicule, CreateVehiculeRequest, VehiculeResponse, VehiculeListResponse, VehiculeDashboardDto, Agence } from '../types/admin';
 import { handleApiError } from '../config/axiosConfig';
 import { getToken } from '../utils/auth';
+import agencyService from './agencyService';
 
 class VehicleService {
     /**
@@ -15,9 +16,36 @@ class VehicleService {
             const token = getToken();
             console.log('Current auth token:', token ? 'Present' : 'Absent');
             
-            const response = await axiosInstance.get<VehiculeListResponse>(API_CONFIG.VEHICULE.getAllVehicules);
-            console.log('API Response:', response.data);
-            return response.data.data;
+            // Récupérer les véhicules et les agences
+            const [vehiclesResponse, agencies] = await Promise.all([
+                axiosInstance.get<VehiculeDashboardDto[]>(API_CONFIG.VEHICULE.getAllVehicules),
+                agencyService.getAllAgencies()
+            ]);
+            
+            console.log('Vehicles Response:', vehiclesResponse.data);
+            console.log('Agencies:', agencies);
+            
+            // Associer les agences aux véhicules
+            const vehicles: Vehicule[] = vehiclesResponse.data.map(dto => {
+                // Trouver l'agence correspondante par son nom
+                const agence = agencies.find(a => a.nomAgence === dto.nommAgence);
+                if (!agence) {
+                    console.warn(`Agence non trouvée pour le véhicule ${dto.immatriculation}`);
+                }
+                return {
+                    immatriculation: dto.immatriculation,
+                    type: dto.type,
+                    capacite: dto.capacite,
+                    agence: agence
+                };
+            });
+            
+            // Mettre à jour le nombre de véhicules dans chaque agence
+            agencies.forEach(agence => {
+                agence.vehicules = vehicles.filter(v => v.agence?.id_agence === agence.id_agence);
+            });
+            
+            return vehicles;
         } catch (error) {
             console.error('Error in getAllVehicles:', error);
             throw handleApiError(error);

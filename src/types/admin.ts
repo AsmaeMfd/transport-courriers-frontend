@@ -34,7 +34,6 @@ export interface VehiculeDto {
     immatriculation: string;
     type: string;
     capacite: number;
-    transporteur?: string;
 }
 
 export interface AgenceDetailsDto {
@@ -57,9 +56,7 @@ export interface VehiculeDashboardDto {
     immatriculation: string;
     type: string;
     capacite: number;
-    agence?: string;
-    transporteur?: string;
-    disponible: boolean;
+    nommAgence?: string;
 }
 
 // Types pour la gestion des employés
@@ -98,7 +95,7 @@ export interface CreateVehiculeRequest {
     immatriculation: string;
     type: string;
     capacite: number;
-    id_agence?: number;
+    idAgence?: number;
 }
 
 export interface CreateEmployeRequest {

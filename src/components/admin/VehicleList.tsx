@@ -36,9 +36,9 @@ export const VehicleList: React.FC<VehicleListProps> = ({
         },
         {
             header: 'Agence',
-            accessor: 'transporteurVehicule' as const,
+            accessor: 'agence' as const,
             render: (_: any, item: VehiculeWithId): ReactNode => 
-                item.transporteurVehicule?.agenceTransporteur?.nomAgence || 'Non assigné'
+                item.agence?.nomAgence || 'Non assigné'
         },
         {
             header: 'Capacité',

@@ -6,6 +6,7 @@ import AdminRoutes from './AdminRoutes';
 import OperatorRoutes from './OperatorRoutes';
 import NotFoundPage from '../pages/NotFoundPage';
 import ProtectedRoute from './ProtectedRoute';
+import TrackingPage from '../pages/client/TrackingPage';
 
 const AuthRoutes: React.FC = () => {
     const { isAuthenticated, user } = useAuth();
@@ -36,6 +37,9 @@ const AuthRoutes: React.FC = () => {
                     )
                 } 
             />
+
+            {/* Route publique pour la page client */}
+            <Route path="/client" element={<TrackingPage />} />
 
             {/* Routes protégées pour l'administrateur */}
             <Route

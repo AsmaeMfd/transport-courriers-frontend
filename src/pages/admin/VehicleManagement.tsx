@@ -194,7 +194,7 @@ const VehicleManagement: React.FC = () => {
                         immatriculation: selectedVehicule.immatriculation,
                         type: selectedVehicule.type,
                         capacite: selectedVehicule.capacite,
-                        id_agence: selectedVehicule.agence?.id_agence
+                        idAgence: selectedVehicule.agence?.id_agence
                     } : undefined}
                     onSubmit={selectedVehicule ? handleUpdate : handleCreate}
                     agences={agences}

@@ -16,7 +16,7 @@ interface FormErrors {
     immatriculation?: string;
     type?: string;
     capacite?: string;
-    id_agence?: string;
+    idAgence?: string;
 }
 
 export const VehicleForm: React.FC<VehicleFormProps> = ({
@@ -30,19 +30,19 @@ export const VehicleForm: React.FC<VehicleFormProps> = ({
         immatriculation: initialData?.immatriculation || '',
         type: initialData?.type || '',
         capacite: initialData?.capacite || 0,
-        id_agence: initialData?.id_agence
+        idAgence: initialData?.idAgence
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
 
     const [selectedAgence, setSelectedAgence] = useState<string>(
-        initialData?.id_agence?.toString() || ''
+        initialData?.idAgence?.toString() || ''
     );
 
     useEffect(() => {
         setFormData(prev => ({
             ...prev,
-            id_agence: selectedAgence ? Number(selectedAgence) : undefined
+            idAgence: selectedAgence ? Number(selectedAgence) : undefined
         }));
     }, [selectedAgence]);
 
@@ -88,8 +88,8 @@ export const VehicleForm: React.FC<VehicleFormProps> = ({
         }
 
         // Validation de l'agence
-        if (!formData.id_agence) {
-            newErrors.id_agence = "L'agence est requise";
+        if (!formData.idAgence) {
+            newErrors.idAgence = "L'agence est requise";
             isValid = false;
         }
 
@@ -145,7 +145,7 @@ export const VehicleForm: React.FC<VehicleFormProps> = ({
                 value={selectedAgence}
                 onChange={setSelectedAgence}
                 placeholder="Sélectionnez une agence"
-                error={errors.id_agence}
+                error={errors.idAgence}
             />
             <Button
                 type="submit"
